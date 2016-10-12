@@ -29,7 +29,7 @@ public class Network
 		{
 			for (int y=0; y<height; y+=1)
 			{
-				Node node = new Node(100 + x*(800/width),100 + y*(800/width));
+				Node node = new Node(x,y);
 				nodes.add(node);
 				nodeMatrix[x][y] = node;
 			}	

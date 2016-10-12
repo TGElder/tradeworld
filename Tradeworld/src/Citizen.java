@@ -2,31 +2,19 @@
 public class Citizen
 {
 	
-	private Node node;	
-	private Node home;
+	private Settlement home;
 
-	public Citizen(Node node)
+	public Citizen(Settlement home)
 	{
-		this.node = node;
-		this.home = node;
+		this.home = home;
 	}
 	
-	public Node getNode()
-	{
-		return node;
-	}
-	
-	public void setNode(Node node)
-	{
-		this.node = node;
-	}
-
-	public Node getHome()
+	public Settlement getHome()
 	{
 		return home;
 	}
 
-	public void setHome(Node home)
+	public void setHome(Settlement home)
 	{
 		this.home = home;
 	}

@@ -1,14 +1,14 @@
 import elder.geometry.Polygon;
 import elder.graphics.Layer;
 
-public class SupplyLayer extends Layer
+public class FreeToSettleLayer extends Layer
 {
 
 	private Economy economy;
 	
-	public SupplyLayer(Economy economy)
+	public FreeToSettleLayer(Economy economy)
 	{
-		super("Supply");
+		super("Free To Settle");
 		this.economy = economy;
 	}
 	
@@ -17,17 +17,15 @@ public class SupplyLayer extends Layer
 	{
 		double size=0.3;
 		
-		for (Supply supply : economy.getSupplys())
-		{
-			Node node = supply.getNode();
-			
+		for (Node node : economy.getFreeToSettle())
+		{			
 			Polygon box = new Polygon();
 			box.add(new Node(node.x-size,node.y - size));
 			box.add(new Node(node.x+size,node.y - size));
 			box.add(new Node(node.x+size,node.y + size));
 			box.add(new Node(node.x-size,node.y + size));
 
-			createPolygon(box, supply.getResource().getR(), supply.getResource().getG(), supply.getResource().getB(), 1f, true);
+			createPolygon(box, 0,1,0, 1f, true);
 		}
 	}
 

@@ -15,7 +15,7 @@ public class DemandLayer extends Layer
 	@Override
 	public void createDrawables()
 	{
-		int size=3;
+		double size=0.3;
 		
 		for (Demand demand : economy.getDemands())
 		{
