@@ -1,15 +1,15 @@
 import elder.geometry.Polygon;
 import elder.graphics.Layer;
 
-public class SourceLayer extends Layer
+public class SupplyLayer extends Layer
 {
 
-	private Network network;
+	private Economy economy;
 	
-	public SourceLayer(Network network)
+	public SupplyLayer(Economy economy)
 	{
-		super("Sources");
-		this.network = network;
+		super("Supply");
+		this.economy = economy;
 	}
 	
 	@Override
@@ -17,9 +17,9 @@ public class SourceLayer extends Layer
 	{
 		int size=3;
 		
-		for (Source source : network.getSources())
+		for (Supply supply : economy.getSupplys())
 		{
-			Node node = source.getNode();
+			Node node = supply.getNode();
 			
 			Polygon box = new Polygon();
 			box.add(new Node(node.x-size,node.y - size));
@@ -27,7 +27,7 @@ public class SourceLayer extends Layer
 			box.add(new Node(node.x+size,node.y + size));
 			box.add(new Node(node.x-size,node.y + size));
 
-			createPolygon(box, 0, 0, 1f, 1f, true);
+			createPolygon(box, supply.getResource().getR(), supply.getResource().getG(), supply.getResource().getB(), 1f, true);
 		}
 	}
 

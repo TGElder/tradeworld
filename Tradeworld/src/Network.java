@@ -6,7 +6,6 @@ public class Network
 {
 	
 	private final Collection<Node> nodes;
-	private final Collection<Source> sources = new HashSet<Source> ();
 
 	Network(Collection<Node> nodes)
 	{
@@ -18,10 +17,8 @@ public class Network
 		return nodes;
 	}
 	
-	public static Network generateRandomNetwork(int width, int height, int seed, double edgeChance)
-	{
-		Random random = new Random(seed);
-		
+	public static Network generateRandomNetwork(int width, int height, Random random, double edgeChance)
+	{		
 		Collection<Node> nodes = new HashSet<Node> ();
 		
 		Node [][] nodeMatrix = new Node[width][width];
@@ -68,11 +65,6 @@ public class Network
 		}
 		
 		return new Network(nodes);
-	}
-
-	public Collection<Source> getSources()
-	{
-		return sources;
 	}
 
 }

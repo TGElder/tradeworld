@@ -2,16 +2,34 @@
 public class Demand
 {
 	
-	private Source source;
-
-	public Source getSource()
+	private final Resource resource;
+	private Supply supply;
+	private final Node node;
+	
+	Demand(Resource resource, Node node)
 	{
-		return source;
+		this.resource = resource;
+		this.node = node;
 	}
 
-	public void setSource(Source source)
+	public Node getNode()
 	{
-		this.source = source;
+		return node;
+	}
+	
+	public Supply getSupply()
+	{
+		return supply;
+	}
+
+	public void setSupply(Supply supply)
+	{
+		this.supply = supply;
+	}
+
+	public Resource getResource()
+	{
+		return resource;
 	}
 
 }

@@ -1,13 +1,18 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import elder.geometry.Point;
 
 public class Node extends Point
 {
 	
-	public final Collection<Edge> edges = new HashSet<Edge> (); 
-	public final Collection<Demand> demand = new HashSet<Demand> ();
+	private final Collection<Edge> edges = new HashSet<Edge> ();
+	
+	private final List<Citizen> citizens = new ArrayList<Citizen> ();
+	
+	private int wealth=0;
 		
 	public Node(double x, double y)
 	{
@@ -23,15 +28,26 @@ public class Node extends Point
 	{
 		edges.add(fromTo);
 	}
-	
-	public Collection<Demand>  getDemand()
+
+	public int getWealth()
 	{
-		return demand;
+		return wealth;
 	}
 	
-	public void addDemand(Demand demand)
+	public void addWealth(int wealth)
 	{
-		this.demand.add(demand);
+		this.wealth += wealth;
 	}
+
+	public void setWealth(int wealth)
+	{
+		this.wealth = wealth;
+	}
+
+	public List<Citizen> getCitizens()
+	{
+		return citizens;
+	}
+
 	
 }

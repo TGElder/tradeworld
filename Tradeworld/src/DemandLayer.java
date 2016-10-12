@@ -4,12 +4,12 @@ import elder.graphics.Layer;
 public class DemandLayer extends Layer
 {
 
-	private Network network;
+	private Economy economy;
 	
-	public DemandLayer(Network network)
+	public DemandLayer(Economy economy)
 	{
 		super("Demand");
-		this.network = network;
+		this.economy = economy;
 	}
 	
 	@Override
@@ -17,19 +17,19 @@ public class DemandLayer extends Layer
 	{
 		int size=3;
 		
-		for (Node node : network.getNodes())
+		for (Demand demand : economy.getDemands())
 		{
-			if (!node.getDemand().isEmpty())
-			{				
-				Polygon box = new Polygon();
-				box.add(new Node(node.x-size,node.y - size));
-				box.add(new Node(node.x+size,node.y - size));
-				box.add(new Node(node.x+size,node.y + size));
-				box.add(new Node(node.x-size,node.y + size));
-	
-				createPolygon(box, 1f, 0, 0f, 1f, true);
 				
-			}
+			Node node = demand.getNode();
+			
+			Polygon box = new Polygon();
+			box.add(new Node(node.x-size,node.y - size));
+			box.add(new Node(node.x+size,node.y - size));
+			box.add(new Node(node.x+size,node.y + size));
+			box.add(new Node(node.x-size,node.y + size));
+
+			createPolygon(box, demand.getResource().getR(), demand.getResource().getG(), demand.getResource().getB(), 1f, false);
+
 		}
 	}
 

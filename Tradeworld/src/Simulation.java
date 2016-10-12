@@ -1,9 +1,6 @@
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import elder.graphics.Canvas;
@@ -15,30 +12,41 @@ import elder.graphics.Navigator;
 
 public class Simulation implements Runnable
 {
-	private Network network;
+	private Economy economy;
 	private List<Layer> layers = new ArrayList<Layer> ();
-	
+	Resource food = new Resource("Food",0,1,0);
+	Resource wine = new Resource("Wine",1,0,0);
+	Random random = new Random(1986);
 
+	
 	public Simulation()
 	{		
-		network = Network.generateRandomNetwork(100, 100, 1987, 0.33);
-		setupSourcesAndDemand(10,100,1987);
+		
+		
+
+		
+		economy = new Economy(Network.generateRandomNetwork(50, 50, random, 0.5));
+		economy.addSupply(food, 100, 4, random);
+		economy.addSupply(wine, 20, 4, random);
+		
+		economy.randomlyPopulate(1, random);
+		
 		
 		Canvas canvas = new Canvas("Tradeworld",1000,1000);
 		
-		EdgeLayer edgeLayer = new EdgeLayer(network);
+		EdgeLayer edgeLayer = new EdgeLayer(economy.getNetwork());
 		canvas.addLayer(edgeLayer);
 		layers.add(edgeLayer);
 		
-		SourceLayer sourceLayer = new SourceLayer(network);
-		canvas.addLayer(sourceLayer);
-		layers.add(sourceLayer);
+		SupplyLayer supplyLayer = new SupplyLayer(economy);
+		canvas.addLayer(supplyLayer);
+		layers.add(supplyLayer);
 		
-		DemandLayer demandLayer = new DemandLayer(network);
+		DemandLayer demandLayer = new DemandLayer(economy);
 		canvas.addLayer(demandLayer);
 		layers.add(demandLayer);
 		
-		TradeLayer tradeLayer = new TradeLayer(network);
+		TradeLayer tradeLayer = new TradeLayer(economy);
 		canvas.addLayer(tradeLayer);
 		layers.add(tradeLayer);
 		
@@ -53,75 +61,37 @@ public class Simulation implements Runnable
 		canvas.run();
 	}
 	
-	private void setupSourcesAndDemand(int sources, int demand, int seed)
-	{
-		List<Node> nodes = new ArrayList<Node> (network.getNodes());
-		
-		Random random = new Random(seed);
-		
-		for (int s=0; s<sources; s++)
-		{
-			int r = random.nextInt(nodes.size());
-			
-			for (int i=0; i<10; i++)
-			{
-				network.getSources().add(new Source(nodes.get(r)));
-			}
-			
-			nodes.remove(r);
-		}
-		
-		for (int d=0; d<demand; d++)
-		{
-			int r = random.nextInt(nodes.size());
-			
-			nodes.get(r).addDemand(new Demand());;
-			
-			nodes.remove(r);
-		}
-		
-		
-	}
-	
-	private void resolve()
-	{
-		for (Node node : network.getNodes())
-		{
-			for (Demand demand : node.getDemand())
-			{
-				demand.setSource(null);
-			}
-		}
-		
-		Collection<Flow> flows = new HashSet<Flow> ();
-		
-		for (Source source : network.getSources())
-		{
-			flows.add(new Flow(source));
-		}
-		
-		boolean running=true;
-		
-		while (running)
-		{
-			running = false;
-			
-			for (Flow flow : flows)
-			{
-				running = flow.step()|running;
-				flow.check();
-			}
-			
-		}
-	}
 	
 	
 	@Override
 	public void run()
 	{
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+		economy.run(food, wine, 0.01, random);
+
+
 		while (true)
 		{
-			resolve();
+
 			for (Layer layer : layers)
 			{
 				layer.updateDrawables();

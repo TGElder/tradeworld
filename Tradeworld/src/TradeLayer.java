@@ -4,28 +4,27 @@ import elder.graphics.Layer;
 public class TradeLayer extends Layer
 {
 
-	private Network network;
+	private Economy economy;
 	
-	public TradeLayer(Network network)
+	public TradeLayer(Economy economy)
 	{
 		super("Trade");
-		this.network = network;
+		this.economy = economy;
 	}
 	
 	@Override
 	public void createDrawables()
 	{
 		
-		for (Node node : network.getNodes())
+		
+		for (Demand demand : economy.getDemands())
 		{
-			for (Demand demand : node.getDemand())
+			if (demand.getSupply()!=null)
 			{
-				if (demand.getSource()!=null)
-				{
-					createLine(new Line(node,demand.getSource().getNode()), 0, 1, 0, 1, false);
-				}
+				createLine(new Line(demand.getNode(),demand.getSupply().getNode()), demand.getResource().getR(), demand.getResource().getG(), demand.getResource().getB(), 1, false);
 			}
 		}
+		
 	}
 
 }
