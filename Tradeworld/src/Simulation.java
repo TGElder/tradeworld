@@ -26,9 +26,9 @@ public class Simulation implements Runnable
 		
 
 		
-		economy = new Economy(Network.generateRandomNetwork(50, 50, random, 0.5));
-		economy.addSupply(food, 100, 4, random);
-		economy.addSupply(wine, 20, 4, random);
+		economy = new Economy(Network.generateRandomNetwork(100, 100, random, 0.5));
+		economy.addSupply(food, 400, 10, random);
+		//economy.addSupply(wine, 20, 4, random);
 		
 		economy.randomlyPopulate(3,3, random);
 		
@@ -106,5 +106,6 @@ public class Simulation implements Runnable
 	
 	// Only allow resources from controlled nodes
 	// Settlements expand when some settlement has no food
+	// Have death/anti-migration
 	
 }

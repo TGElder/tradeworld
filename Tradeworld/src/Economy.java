@@ -60,8 +60,11 @@ public class Economy
 		
 		for (Supply supply : supplys)
 		{
-			supply.setDemand(null);
-			flows.add(new Flow(supply));
+			if (supply.isActive())
+			{
+				supply.setDemand(null);
+				flows.add(new Flow(supply));
+			}
 		}
 		
 		boolean running=true;
@@ -155,9 +158,10 @@ public class Economy
 		matchSupplyAndDemand();
 		doWealth();
 		growPopulation(birthRate,random);
+		settle();
 		migrate(migrationRate,random);
 
-		buildNewSettlements(settlementChance,settlementStoppingChance,random);
+		//buildNewSettlements(settlementChance,settlementStoppingChance,random);
 
 		
 		int population=0;
@@ -170,6 +174,48 @@ public class Economy
 		
 		System.out.println("Total population is "+population);
 
+	}
+	
+	public void settle()
+	{
+		Collection<Settler> settlers = new HashSet<Settler> ();
+		
+		for (Settlement settlement : settlements)
+		{
+			Collection<Resource> missingResources = new HashSet<Resource> ();
+			
+			for (Demand demand : demands)
+			{
+				if (demand.getNode()==settlement.getNode())
+				{
+					if (demand.getSupply()==null)
+					{
+						missingResources.add(demand.getResource());
+					}
+				}
+			}
+			
+			for (Resource resource : missingResources)
+			{
+				settlers.add(new Settler(settlement.getNode(),resource));
+			}
+		}
+		
+		boolean running=true;
+		
+		while (running)
+		{
+			running = false;
+			
+			for (Settler settler : settlers)
+			{
+				settler.check();
+				running = settler.step()|running;
+			}
+			
+		}
+		
+		
 	}
 
 	public Collection<Demand> getDemands()
@@ -248,6 +294,82 @@ public class Economy
 
 	}
 	
+	class Settler
+	{
+		
+		private Supply supply=null;
+		private Resource resource;
+		private Collection<Node> closed = new HashSet<Node> ();
+		private Collection<Node> front = new HashSet<Node> ();
+
+		
+		Settler(Node node, Resource resource)
+		{
+			this.resource = resource;
+			front.add(node);
+		}
+		
+		boolean step()
+		{
+			if (supply!=null||front.isEmpty())
+			{
+				return false;
+			}
+			else
+			{
+				closed.addAll(front);
+				
+				Collection<Node> newFront = new HashSet<Node> ();
+				
+				for (Node node : front)
+				{
+					for (Edge edge : node.getEdges())
+					{
+						if (!closed.contains(edge.getTo()))
+						{
+							newFront.add(edge.getTo());
+						}
+					}
+				}
+				
+				front = newFront;
+			
+				return true;
+			}
+		
+			
+		}
+		
+		void check()
+		{
+			
+			for (Supply supply : supplys)
+			{
+				if (this.supply==null)
+				{
+					if(front.contains(supply.getNode()))
+					{
+						
+						if(freeToSettle.contains(supply.getNode()))
+						{
+				
+							assert(!supply.isActive());
+							
+							this.supply = supply;
+							addSettlement(supply.getNode());
+							
+							return;
+						}
+					}
+				}
+					
+			
+			}
+			
+		}
+
+	}
+	
 	
 
 
@@ -307,10 +429,23 @@ public class Economy
 	
 	Settlement addSettlement(Node node)
 	{
-		Collection<Node> limits = node.getNeighboursWithinDistance(3);
+		Collection<Node> limits = node.getNeighboursWithinDistance(8);
+		limits.retainAll(freeToSettle);
+		
+		
 		Settlement settlement = new Settlement(node,limits);
 		settlements.add(settlement);
 		freeToSettle.removeAll(limits);
+
+		
+		for (Supply supply : supplys)
+		{
+			if (limits.contains(supply.getNode()))
+			{
+				supply.setActive(true);
+			}
+		}
+		
 		return settlement;
 	}
 	
