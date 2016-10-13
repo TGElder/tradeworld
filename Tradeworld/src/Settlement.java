@@ -1,10 +1,12 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 public class Settlement
 {
 	
-	private final Collection<Citizen> citizens = new HashSet<Citizen> ();
+	private final List<Citizen> citizens = new ArrayList<Citizen> ();
 	private final Node node;
 	private final Collection<Node> limits;
 	private int wealth=0;
@@ -15,7 +17,7 @@ public class Settlement
 		this.limits = limits;
 	}
 
-	public Collection<Citizen> getCitizens()
+	public List<Citizen> getCitizens()
 	{
 		return citizens;
 	}

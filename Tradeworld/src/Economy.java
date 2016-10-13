@@ -134,19 +134,59 @@ public class Economy
 	
 	void migrate2(double migrationRate, Random random)
 	{
+		
+		List<Citizen> migrants = new ArrayList<Citizen> ();
+		List<Settlement> newPositions = new ArrayList<Settlement> ();
+		
 		for (Settlement settlement : settlements)
 		{		
 			
-			for (int w=0; w<settlement.getWealth(); w++)
+			if (settlement.getWealth()<0)
 			{
 				
+				int numberOfMigrants = 0;
+			
+				for (int w=0; w>settlement.getWealth(); w--)
+				{
+					if (random.nextDouble()<migrationRate)
+					{
+						numberOfMigrants ++;
+					}
+				}
+				
+				for (int c=0; c<Math.min(numberOfMigrants, settlement.getCitizens().size()); c++)
+				{
+					migrants.add(settlement.getCitizens().get(c));
+				}
+				
+				
+			}
+			else if (settlement.getWealth()>0)
+			{
+				for (int w=0; w<settlement.getWealth(); w++)
+				{
+					if (random.nextDouble()<migrationRate)
+					{
+						newPositions.add(settlement);
+					}
+				}
 			}
 			
-			for (Citizen citizen : settlement.getCitizens())
-			{
-				demands.add(new Demand(food,citizen.getHome().getNode()));
-			}
 		
+		}
+		
+		Collections.shuffle(migrants);
+		Collections.shuffle(newPositions);
+		
+		for (int m=0; m<Math.min(migrants.size(), newPositions.size()); m++)
+		{
+			Citizen migrant = migrants.get(m);
+			Settlement settlement = newPositions.get(m);
+			
+			migrant.getHome().getCitizens().remove(migrant);
+			settlement.getCitizens().add(migrant);
+			migrant.setHome(settlement);
+			
 		}
 	}
 
@@ -177,7 +217,7 @@ public class Economy
 		doWealth();
 		growPopulation(birthRate,random);
 		settle();
-		migrate(migrationRate,random);
+		migrate2(migrationRate,random);
 
 		//buildNewSettlements(settlementChance,settlementStoppingChance,random);
 
