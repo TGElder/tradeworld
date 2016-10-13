@@ -1,3 +1,4 @@
+package elder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -94,6 +95,19 @@ public class Node extends Point
 		
 		return closed;
 		
+	}
+	
+	public boolean containsEdgeTo(Node to)
+	{
+		for (Edge edge : edges)
+		{
+			if (edge.getTo()==to)
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	

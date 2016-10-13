@@ -1,3 +1,4 @@
+package elder;
 import elder.graphics.Layer;
 
 public class EdgeLayer extends Layer

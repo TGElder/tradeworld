@@ -1,7 +1,13 @@
+package elder;
 
+import java.awt.GridBagConstraints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import javax.swing.JButton;
 
 import elder.geometry.Point;
 import elder.graphics.Canvas;
@@ -17,8 +23,7 @@ public class Simulation implements Runnable
 	private List<Layer> layers = new ArrayList<Layer> ();
 	Resource food = new Resource("Food",0,1,0);
 	Resource wine = new Resource("Wine",1,0,0);
-	Random random = new Random(1986);
-
+	Random random = new Random(2016);
 	
 	public Simulation()
 	{		
@@ -26,9 +31,9 @@ public class Simulation implements Runnable
 		
 
 		
-		economy = new Economy(Network.generateRandomNetwork(100, 100, random, 0.5));
+		economy = new Economy(Network.generateRandomNetwork(50, 50, random, 0.75));
 		economy.addSupply(food, 400, 10, random);
-		//economy.addSupply(wine, 20, 4, random);
+		economy.addSupply(wine, 4, 100, random);
 		
 		economy.randomlyPopulate(3,3, random);
 		
@@ -61,12 +66,26 @@ public class Simulation implements Runnable
 		canvas.addLayer(wealthLayer);
 		layers.add(wealthLayer);
 		
+		PopulationLayer populationLayer = new PopulationLayer(economy);
+		populationLayer.disable();
+		canvas.addLayer(populationLayer);
+		layers.add(populationLayer);
+		
+		
 		FreeToSettleLayer freeToSettleLayer = new FreeToSettleLayer(economy);
 		freeToSettleLayer.disable();
 		canvas.addLayer(freeToSettleLayer);
 		layers.add(freeToSettleLayer);
 		
-		GUI gui = new GUI(canvas);
+		GUI gui = new GUI(canvas,this);
+		
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.gridwidth=1;
+		constraints.gridheight=1;
+		constraints.weightx = 1;
+		constraints.weighty = 1;
+		
 		
 		Navigator navigator = new Navigator(canvas);
 		canvas.addMouseListener(navigator);
@@ -83,18 +102,23 @@ public class Simulation implements Runnable
 	public void run()
 	{
 		
-
 		while (true)
 		{
-			economy.run(food, wine, 0.1, 0.5, 0.05, 0.01, random);
+			
+				
+			economy.run(food, wine, 0.1, 0.25, 0.05, 0.01, random);
 
 
 			for (Layer layer : layers)
 			{
 				layer.updateDrawables();
 			}
+				
 		}
+			
+		
 	}
+
 	
 	public static void main(String[] args)
 	{

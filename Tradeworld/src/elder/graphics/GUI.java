@@ -2,17 +2,23 @@ package elder.graphics;
 import java.awt.Checkbox;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import elder.Simulation;
+
+
 public class GUI extends JFrame
 {
-	public GUI(Canvas canvas)
+	public GUI(Canvas canvas, Simulation simulation)
 	{		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -20,9 +26,7 @@ public class GUI extends JFrame
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.BOTH;
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.gridwidth=2;
+		constraints.gridwidth=1;
 		constraints.gridheight=1;
 		constraints.weightx = 1;
 		constraints.weighty = 1;
@@ -56,12 +60,14 @@ public class GUI extends JFrame
 			layerPanel.add(checkbox);
 		}
 		
-		constraints.gridx = 2;
+		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.gridwidth=1;
-		constraints.gridheight=9;
+		constraints.gridheight=1;
 		
 		add(layerPanel,constraints);
+		
+
 				
 		pack();
 		setVisible(true);

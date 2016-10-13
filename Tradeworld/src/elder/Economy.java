@@ -1,3 +1,4 @@
+package elder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -109,31 +110,6 @@ public class Economy
 	
 	void migrate(double migrationRate, Random random)
 	{
-		Collection<Citizen> babies = new HashSet<Citizen> ();
-		
-		for (Settlement settlement : settlements)
-		{
-			babies.clear();
-			
-			for (int w=0; w<settlement.getWealth(); w++)
-			{
-				if (random.nextDouble()<migrationRate)
-				{
-					babies.add(new Citizen(settlement));
-				}
-			}
-			
-			for (Citizen baby : babies)
-			{
-				//baby.getHome().addWealth(2);
-				baby.getHome().getCitizens().add(baby);
-
-			}
-		}
-	}
-	
-	void migrate2(double migrationRate, Random random)
-	{
 		
 		List<Citizen> migrants = new ArrayList<Citizen> ();
 		List<Settlement> newPositions = new ArrayList<Settlement> ();
@@ -200,6 +176,8 @@ public class Economy
 			for (Citizen citizen : settlement.getCitizens())
 			{
 				demands.add(new Demand(food,citizen.getHome().getNode()));
+				demands.add(new Demand(luxury,citizen.getHome().getNode()));
+
 			}
 		
 		}
@@ -217,7 +195,7 @@ public class Economy
 		doWealth();
 		growPopulation(birthRate,random);
 		settle();
-		migrate2(migrationRate,random);
+		migrate(migrationRate,random);
 
 		//buildNewSettlements(settlementChance,settlementStoppingChance,random);
 
@@ -403,20 +381,23 @@ public class Economy
 			
 			for (Supply supply : supplys)
 			{
-				if (this.supply==null)
+				if (supply.getResource()==resource)
 				{
-					if(front.contains(supply.getNode()))
+					if (this.supply==null)
 					{
-						
-						if(freeToSettle.contains(supply.getNode()))
+						if(front.contains(supply.getNode()))
 						{
-				
-							assert(!supply.isActive());
 							
-							this.supply = supply;
-							addSettlement(supply.getNode());
-							
-							return;
+							if(freeToSettle.contains(supply.getNode()))
+							{
+					
+								assert(!supply.isActive());
+								
+								this.supply = supply;
+								addSettlement(supply.getNode());
+								
+								return;
+							}
 						}
 					}
 				}
@@ -487,7 +468,7 @@ public class Economy
 	
 	Settlement addSettlement(Node node)
 	{
-		Collection<Node> limits = node.getNeighboursWithinDistance(8);
+		Collection<Node> limits = node.getNeighboursWithinDistance(5);
 		limits.retainAll(freeToSettle);
 		
 		

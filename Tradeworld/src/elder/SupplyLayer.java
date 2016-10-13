@@ -1,25 +1,26 @@
+package elder;
 import elder.geometry.Polygon;
 import elder.graphics.Layer;
 
-public class SettlementLayer extends Layer
+public class SupplyLayer extends Layer
 {
 
 	private Economy economy;
 	
-	public SettlementLayer(Economy economy)
+	public SupplyLayer(Economy economy)
 	{
-		super("Settlements");
+		super("Supply");
 		this.economy = economy;
 	}
 	
 	@Override
 	public void createDrawables()
 	{
-		double size=0.5;
+		double size=0.3;
 		
-		for (Settlement settlement : economy.getSettlements())
-		{			
-			Node node = settlement.getNode();
+		for (Supply supply : economy.getSupplys())
+		{
+			Node node = supply.getNode();
 			
 			Polygon box = new Polygon();
 			box.add(new Node(node.x-size,node.y - size));
@@ -27,7 +28,7 @@ public class SettlementLayer extends Layer
 			box.add(new Node(node.x+size,node.y + size));
 			box.add(new Node(node.x-size,node.y + size));
 
-			createPolygon(box, 0,0,0, 1f, false);
+			createPolygon(box, supply.getResource().getR(), supply.getResource().getG(), supply.getResource().getB(), 1f, true);
 		}
 	}
 
