@@ -131,6 +131,24 @@ public class Economy
 			}
 		}
 	}
+	
+	void migrate2(double migrationRate, Random random)
+	{
+		for (Settlement settlement : settlements)
+		{		
+			
+			for (int w=0; w<settlement.getWealth(); w++)
+			{
+				
+			}
+			
+			for (Citizen citizen : settlement.getCitizens())
+			{
+				demands.add(new Demand(food,citizen.getHome().getNode()));
+			}
+		
+		}
+	}
 
 	
 	public void createDemandFromCitizens(Resource food, Resource luxury)
