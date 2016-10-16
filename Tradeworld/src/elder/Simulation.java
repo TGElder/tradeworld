@@ -77,6 +77,11 @@ public class Simulation implements Runnable
 		canvas.addLayer(freeToSettleLayer);
 		layers.add(freeToSettleLayer);
 		
+		OwnershipLayer ownershipLayer = new OwnershipLayer(economy);
+		ownershipLayer.disable();
+		canvas.addLayer(ownershipLayer);
+		layers.add(ownershipLayer);
+		
 		GUI gui = new GUI(canvas,this);
 		
 		GridBagConstraints constraints = new GridBagConstraints();

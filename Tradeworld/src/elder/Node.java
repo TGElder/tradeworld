@@ -45,10 +45,10 @@ public class Node extends Point
 		this.wealth = wealth;
 	}
 	
-	public Collection<Node> getNeighboursWithinDistance(double threshold)
+	public Map<Node,Double> getNeighboursWithinDistance(double threshold)
 	{
 		
-		Collection<Node> closed = new HashSet<Node> ();
+		Map<Node,Double> closed = new HashMap<Node,Double> ();
 		List<Node> open = new ArrayList<Node> ();
 		List<Double> openDistances = new ArrayList<Double> ();
 		
@@ -63,14 +63,14 @@ public class Node extends Point
 			open.remove(0);
 			openDistances.remove(0);
 			
-			closed.add(focus);
+			closed.put(focus,focusDistance);
 			
 			for (Edge edge : focus.getEdges())
 			{
 				Node to = edge.getTo();
 				double toDistance = edge.length;
 				
-				if ((focusDistance+toDistance)<=threshold&&!closed.contains(to))
+				if ((focusDistance+toDistance)<=threshold&&!closed.containsKey(to))
 				{
 					int openIndex = open.indexOf(to);
 					

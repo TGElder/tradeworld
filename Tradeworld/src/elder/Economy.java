@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Economy
@@ -18,6 +19,9 @@ public class Economy
 
 	private List<Node> nodes; //TODO sloppy
 	private List<Node> freeToSettle; 
+	
+	private final double [] distancesToOwners;
+	private final Settlement  [] owners;
 
 	
 	Economy(Network network)
@@ -25,6 +29,14 @@ public class Economy
 		this.network = network;
 		nodes = new ArrayList<Node> (network.getNodes());
 		freeToSettle = new ArrayList<Node> (network.getNodes());
+		
+		distancesToOwners = new double[network.getNodeCount()];
+		owners = new Settlement [network.getNodeCount()];
+		
+		for (int n=0; n<network.getNodeCount(); n++)
+		{
+			distancesToOwners[n] = Double.POSITIVE_INFINITY;
+		}
 	}
 	
 	void addSupply(Resource resource, int amount, int depth, Random random)
@@ -468,14 +480,38 @@ public class Economy
 	
 	Settlement addSettlement(Node node)
 	{
-		Collection<Node> limits = node.getNeighboursWithinDistance(5);
-		limits.retainAll(freeToSettle);
+		assert(freeToSettle.contains(node));
 		
+		Map<Node,Double> distances= node.getNeighboursWithinDistance(5);
+		Collection<Node> limits = new HashSet<Node> (); 
+		
+		for (Map.Entry<Node, Double> other : distances.entrySet())
+		{
+			int index = ((IndexNode) other.getKey()).getIndex();
+			
+			if (other.getValue()<distancesToOwners[index])
+			{
+				distancesToOwners[index] = other.getValue();
+				
+				Settlement currentOwner = owners[index];
+				if (currentOwner!=null)
+				{
+					currentOwner.getLimits().remove(other.getKey());
+				}
+				
+				limits.add(other.getKey());
+			}
+		}		
 		
 		Settlement settlement = new Settlement(node,limits);
 		settlements.add(settlement);
-		freeToSettle.removeAll(limits);
-
+		freeToSettle.removeAll(distances.keySet());
+		
+		for (Node other : limits)
+		{
+			int index = ((IndexNode)other).getIndex();
+			owners[index] = settlement;
+		}
 		
 		for (Supply supply : supplys)
 		{
@@ -550,11 +586,9 @@ public class Economy
 			}
 			
 		}
-		
 
-		
-		
 	}
+
 	
 	Collection<Node> getFreeToSettle()
 	{

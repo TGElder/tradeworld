@@ -11,7 +11,7 @@ public class Network
 	private final List<IndexNode> nodes;
 
 	private final Dijkstra dijkstra;
-	
+		
 	Network(List<IndexNode> nodes)
 	{
 		this.nodes = nodes;
@@ -24,6 +24,11 @@ public class Network
 	Collection<IndexNode> getNodes()
 	{
 		return nodes;
+	}
+	
+	public int getNodeCount()
+	{
+		return nodes.size();
 	}
 	
 	public static Network generateRandomNetwork(int width, int height, Random random, double edgeChance)
