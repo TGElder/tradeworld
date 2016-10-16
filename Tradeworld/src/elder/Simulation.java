@@ -31,7 +31,7 @@ public class Simulation implements Runnable
 		
 
 		
-		economy = new Economy(Network.generateRandomNetwork(50, 50, random, 0.75));
+		economy = new Economy(Network.generateRandomNetwork(50, 50, random, 0.5));
 		economy.addSupply(food, 400, 10, random);
 		economy.addSupply(wine, 4, 100, random);
 		
@@ -113,11 +113,24 @@ public class Simulation implements Runnable
 	public void run()
 	{
 		
+		double birthRate = 0.1;
+		
 		while (true)
 		{
 			
+			int pop=0;
+			
+			for (Settlement settlement : economy.getSettlements())
+			{
+				pop += settlement.getCitizens().size();
+			}
+			
+			if (pop>=10000)
+			{
+				birthRate = 0;
+			}
 				
-			economy.run(food, wine, 0.1, 0.25, 0.05, 0.01, random);
+			economy.run(food, wine, birthRate, 0.25, 0.05, 0.01, random);
 
 
 			for (Layer layer : layers)

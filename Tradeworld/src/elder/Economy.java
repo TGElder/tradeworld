@@ -207,9 +207,10 @@ public class Economy
 		createDemandFromCitizens(food,luxury);
 		matchSupplyAndDemand();
 		doWealth();
-		computeCountries();
 		growPopulation(birthRate,random);
 		settle();
+		computeCountries();
+
 		migrate(migrationRate,random);
 
 		//buildNewSettlements(settlementChance,settlementStoppingChance,random);
@@ -613,44 +614,57 @@ public class Economy
 	
 	void computeCountries()
 	{
-
-		for (Country country : countries)
-		{
-			country.getSettlements().clear();
-		}
 		
-		for (Country country : countries)
+		for (Settlement settlement : settlements)
 		{
-			country.computeWealth();
+			for (Settlement other : settlements)
+			{
+				other.addInfluence(settlement, settlement.getInfluenceAt(other.getNode(), network));
+			}
 		}
 		
 		for (Settlement settlement : settlements)
 		{
-			
-			double maxWealth = Double.NEGATIVE_INFINITY;
-			Country maxCountry = null;
-			
-			for (Country country : countries)
-			{
-				
-				
-				double focusWealth = country.getWealthAt(settlement.getNode());
-				
-				if (country.getWealthAt(settlement.getNode())>maxWealth)
-				{
-					maxWealth = focusWealth;
-					maxCountry = country;
-				}
-				
-				
-				
-			}
-			
-		
-			maxCountry.getSettlements().add(settlement);
-			
-
+			settlement.computeOwner();
 		}
+
+//		for (Country country : countries)
+//		{
+//			country.getSettlements().clear();
+//		}
+//		
+//		for (Country country : countries)
+//		{
+//			country.computeWealth();
+//		}
+//		
+//		for (Settlement settlement : settlements)
+//		{
+//			
+//			double maxWealth = Double.NEGATIVE_INFINITY;
+//			Country maxCountry = null;
+//			
+//			for (Country country : countries)
+//			{
+//				
+//				
+//				double focusWealth = country.getWealthAt(settlement.getNode());
+//				
+//				if (country.getWealthAt(settlement.getNode())>maxWealth)
+//				{
+//					maxWealth = focusWealth;
+//					maxCountry = country;
+//				}
+//				
+//				
+//				
+//			}
+//			
+//		
+//			maxCountry.getSettlements().add(settlement);
+//			
+//
+//		}
 		
 		
 	}

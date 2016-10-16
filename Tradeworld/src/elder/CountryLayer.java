@@ -33,28 +33,47 @@ public class CountryLayer extends Layer
 		
 		double size=0.5;
 		
-		for (Country country : economy.getCountries())
-		{		
-			Colour colour = ownershipLayer.getColours().get(country.getCapital());
-						
+		for (Settlement settlement : economy.getSettlements())
+		{
+			Colour colour = ownershipLayer.getColours().get(settlement.getTopOwner());
 			
-			for (Settlement settlement : country.getSettlements())
+			for (Node node : settlement.getLimits())
 			{
-			
-				for (Node node : settlement.getLimits())
-				{
-					Polygon box = new Polygon();
-					box.add(new Node(node.x-size,node.y - size));
-					box.add(new Node(node.x+size,node.y - size));
-					box.add(new Node(node.x+size,node.y + size));
-					box.add(new Node(node.x-size,node.y + size));
-						
-					createPolygon(box, colour.R, colour.G, colour.B, 0.5f, true);
-				}
-								
+				Polygon box = new Polygon();
+				box.add(new Node(node.x-size,node.y - size));
+				box.add(new Node(node.x+size,node.y - size));
+				box.add(new Node(node.x+size,node.y + size));
+				box.add(new Node(node.x-size,node.y + size));
+					
+				createPolygon(box, colour.R, colour.G, colour.B, 0.5f, true);
 			}
-			
 		}
+		
+		
+//		for (Country country : economy.getCountries())
+//		{		
+//			Colour colour = ownershipLayer.getColours().get(country.getCapital());
+//						
+//			
+//			for (Settlement settlement : country.getSettlements())
+//			{
+//			
+//				for (Node node : settlement.getLimits())
+//				{
+//					Polygon box = new Polygon();
+//					box.add(new Node(node.x-size,node.y - size));
+//					box.add(new Node(node.x+size,node.y - size));
+//					box.add(new Node(node.x+size,node.y + size));
+//					box.add(new Node(node.x-size,node.y + size));
+//						
+//					createPolygon(box, colour.R, colour.G, colour.B, 0.5f, true);
+//				}
+//								
+//			}
+//			
+//		}
 	}
-
+	
 }
+
+
