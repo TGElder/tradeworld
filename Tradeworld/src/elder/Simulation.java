@@ -23,7 +23,7 @@ public class Simulation implements Runnable
 	private List<Layer> layers = new ArrayList<Layer> ();
 	Resource food = new Resource("Food",0,1,0);
 	Resource wine = new Resource("Wine",1,0,0);
-	Random random = new Random(2016);
+	Random random = new Random(1986);
 	
 	public Simulation()
 	{		
@@ -81,6 +81,12 @@ public class Simulation implements Runnable
 		ownershipLayer.disable();
 		canvas.addLayer(ownershipLayer);
 		layers.add(ownershipLayer);
+		
+		CountryLayer countryLayer = new CountryLayer(economy,ownershipLayer);
+		countryLayer.disable();
+		canvas.addLayer(countryLayer);
+		layers.add(countryLayer);
+		
 		
 		GUI gui = new GUI(canvas,this);
 		

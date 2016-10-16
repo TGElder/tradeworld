@@ -50,4 +50,9 @@ public class OwnershipLayer extends Layer
 		}
 	}
 
+	public Map<Settlement,Colour> getColours()
+	{
+		return colours;
+	}
+
 }

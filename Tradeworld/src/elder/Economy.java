@@ -22,6 +22,8 @@ public class Economy
 	
 	private final double [] distancesToOwners;
 	private final Settlement  [] owners;
+	
+	private final Collection<Country> countries = new HashSet<Country> ();
 
 	
 	Economy(Network network)
@@ -205,6 +207,7 @@ public class Economy
 		createDemandFromCitizens(food,luxury);
 		matchSupplyAndDemand();
 		doWealth();
+		computeCountries();
 		growPopulation(birthRate,random);
 		settle();
 		migrate(migrationRate,random);
@@ -521,6 +524,9 @@ public class Economy
 			}
 		}
 		
+		Country country = new Country(network,settlement);
+		countries.add(country);
+		
 		return settlement;
 	}
 	
@@ -599,6 +605,54 @@ public class Economy
 	{
 		return settlements;
 	}
+
+	public Collection<Country> getCountries()
+	{
+		return countries;
+	}
 	
+	void computeCountries()
+	{
+
+		for (Country country : countries)
+		{
+			country.getSettlements().clear();
+		}
+		
+		for (Country country : countries)
+		{
+			country.computeWealth();
+		}
+		
+		for (Settlement settlement : settlements)
+		{
+			
+			double maxWealth = Double.NEGATIVE_INFINITY;
+			Country maxCountry = null;
+			
+			for (Country country : countries)
+			{
+				
+				
+				double focusWealth = country.getWealthAt(settlement.getNode());
+				
+				if (country.getWealthAt(settlement.getNode())>maxWealth)
+				{
+					maxWealth = focusWealth;
+					maxCountry = country;
+				}
+				
+				
+				
+			}
+			
+		
+			maxCountry.getSettlements().add(settlement);
+			
+
+		}
+		
+		
+	}
 	
 }
