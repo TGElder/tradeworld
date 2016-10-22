@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -13,8 +14,8 @@ public class Economy
 	
 
 	private Network network;
-	private Collection<Demand> demands = new HashSet<Demand> ();
-	private Collection<Supply> supplys = new HashSet<Supply> ();
+	//private Collection<Demand> demands = new HashSet<Demand> ();
+	//private Collection<Supply> supplys = new HashSet<Supply> ();
 	private Collection<Settlement> settlements = new HashSet<Settlement> ();
 
 	private List<Node> nodes; //TODO sloppy
@@ -50,11 +51,10 @@ public class Economy
 			
 			for (int d=0; d<depth; d++)
 			{
-			
-				supplys.add(new Supply(resource,nodes.get(r)));
+				nodes.get(r).getSupply().add(new Supply(resource,nodes.get(r)));
 			}
 			
-			
+	
 			nodes.remove(r);
 		}
 		
@@ -65,33 +65,50 @@ public class Economy
 	void matchSupplyAndDemand()
 	{
 		
-		for (Demand demand : demands)
-		{
-			demand.setSupply(null);
-		}
-		
-		
 		Collection<Flow> flows = new HashSet<Flow> ();
 		
-		for (Supply supply : supplys)
+		int demandCount=0;
+		int supplyCount=0;
+		
+		for (Node node : network.getNodes())
 		{
-			if (supply.isActive())
+			for (Demand demand : node.getDemand())
 			{
-				supply.setDemand(null);
-				flows.add(new Flow(supply));
+				demandCount ++;
+				demand.setSupply(null);
+			}
+			
+			for (Supply supply : node.getSupply())
+			{
+				if (supply.isActive())
+				{
+					supplyCount ++;
+					supply.setDemand(null);
+					flows.add(new Flow(supply));
+				}
 			}
 		}
+
+		int matches=0;
 		
-		boolean running=true;
-		
-		while (running)
-		{
-			running = false;
+		while (flows.size()>0)
+		{		
+			Iterator<Flow> flowIterator = flows.iterator();
 			
-			for (Flow flow : flows)
+			while (flowIterator.hasNext())
 			{
-				flow.check();
-				running = flow.step()|running;
+				Flow flow = flowIterator.next();
+				
+				if (!flow.step())
+				{
+					flowIterator.remove();
+					matches++;
+				}
+				
+				if (matches==demandCount||matches==supplyCount)
+				{
+					return;
+				}
 			}
 			
 		}
@@ -183,14 +200,19 @@ public class Economy
 	
 	public void createDemandFromCitizens(Resource food, Resource luxury)
 	{
-		demands.clear();
+		for (Node node : network.getNodes())
+		{
+			node.getDemand().clear();
+		}
 		
 		for (Settlement settlement : settlements)
-		{			
+		{	
+			Node node = settlement.getNode();
+			
 			for (Citizen citizen : settlement.getCitizens())
 			{
-				demands.add(new Demand(food,citizen.getHome().getNode()));
-				demands.add(new Demand(luxury,citizen.getHome().getNode()));
+				node.getDemand().add(new Demand(food,citizen.getHome().getNode()));
+				node.getDemand().add(new Demand(luxury,citizen.getHome().getNode()));
 
 			}
 		
@@ -236,15 +258,14 @@ public class Economy
 		{
 			Collection<Resource> missingResources = new HashSet<Resource> ();
 			
-			for (Demand demand : demands)
+			for (Demand demand : settlement.getNode().getDemand())
 			{
-				if (demand.getNode()==settlement.getNode())
+				
+				if (demand.getSupply()==null)
 				{
-					if (demand.getSupply()==null)
-					{
-						missingResources.add(demand.getResource());
-					}
+					missingResources.add(demand.getResource());
 				}
+				
 			}
 			
 			for (Resource resource : missingResources)
@@ -270,16 +291,6 @@ public class Economy
 		
 	}
 
-	public Collection<Demand> getDemands()
-	{
-		return demands;
-	}
-	
-	public Collection<Supply> getSupplys()
-	{
-		return supplys;
-	}
-	
 	
 	class Flow
 	{
@@ -297,52 +308,53 @@ public class Economy
 		
 		boolean step()
 		{
-			if (supply.getDemand()!=null||front.isEmpty())
+			assert(supply.getDemand()==null);
+			
+			for (Node node : front)
+			{
+				for (Demand demand : node.getDemand())
+				{
+					if (supply.getDemand()==null&&demand.getResource()==supply.getResource()&&demand.getSupply()==null)
+					{
+						assert(demand.getSupply()==null);
+						demand.setSupply(supply);
+						assert(supply.getDemand()==null);
+						supply.setDemand(demand);
+						return false;
+						
+					}
+				}
+			}
+			
+			closed.addAll(front);
+			
+			Collection<Node> newFront = new HashSet<Node> ();
+			
+			for (Node node : front)
+			{
+				for (Edge edge : node.getEdges())
+				{
+					if (!closed.contains(edge.getTo()))
+					{
+						newFront.add(edge.getTo());
+					}
+				}
+			}
+			
+			front = newFront;
+			
+			if (front.isEmpty())
 			{
 				return false;
 			}
 			else
 			{
-				closed.addAll(front);
-				
-				Collection<Node> newFront = new HashSet<Node> ();
-				
-				for (Node node : front)
-				{
-					for (Edge edge : node.getEdges())
-					{
-						if (!closed.contains(edge.getTo()))
-						{
-							newFront.add(edge.getTo());
-						}
-					}
-				}
-				
-				front = newFront;
-			
-				return true;
-			}
-		
-			
-		}
-		
-		void check()
-		{
-			
-			for (Demand demand : demands)
-			{
-				if (supply.getDemand()==null&&demand.getResource()==supply.getResource()&&front.contains(demand.getNode())&&demand.getSupply()==null) //TODO inefficient
-				{
-					assert(demand.getSupply()==null);
-					demand.setSupply(supply);
-					assert(supply.getDemand()==null);
-					supply.setDemand(demand);
-												
-					return;
-				}
+				return true;	
 			}
 			
 		}
+		
+		
 
 	}
 	
@@ -395,13 +407,14 @@ public class Economy
 		void check()
 		{
 			
-			for (Supply supply : supplys)
+			for (Node node : front)
 			{
-				if (supply.getResource()==resource)
+				for (Supply supply : node.getSupply())
 				{
-					if (this.supply==null)
+				
+					if (supply.getResource()==resource)
 					{
-						if(front.contains(supply.getNode()))
+						if (this.supply==null)
 						{
 							
 							if(freeToSettle.contains(supply.getNode()))
@@ -414,8 +427,10 @@ public class Economy
 								
 								return;
 							}
+							
 						}
 					}
+					
 				}
 					
 			
@@ -454,12 +469,15 @@ public class Economy
 	
 	void doWealth()
 	{
-		for (Demand demand : demands)
+		for (Node node : network.getNodes())
 		{
-			if (demand.getSupply()!=null)
+			for (Demand demand : node.getDemand())
 			{
-				demand.getNode().addWealth(-1);
-				demand.getSupply().getNode().addWealth(1);
+				if (demand.getSupply()!=null)
+				{
+					demand.getNode().addWealth(-1);
+					demand.getSupply().getNode().addWealth(1);
+				}
 			}
 		}
 		
@@ -515,85 +533,19 @@ public class Economy
 		{
 			int index = ((IndexNode)other).getIndex();
 			owners[index] = settlement;
-		}
-		
-		for (Supply supply : supplys)
-		{
-			if (limits.contains(supply.getNode()))
+			
+			for (Supply supply : other.getSupply())
 			{
 				supply.setActive(true);
 			}
 		}
 		
+	
+		
 		Country country = new Country(network,settlement);
 		countries.add(country);
 		
 		return settlement;
-	}
-	
-	void buildNewSettlements(double chance, double stoppingChance, Random random)
-	{
-		
-		Collection<Settlement> existingSettlements = new HashSet<Settlement>(settlements); //TODO
-		
-		for (Settlement settlement : existingSettlements)
-		{
-			if (random.nextDouble()<=chance)
-			{
-				
-				Node candidate = wander(settlement.getNode(),stoppingChance,random);
-				
-				if (freeToSettle.contains(candidate))
-				{
-					addSettlement(candidate);
-				}
-				
-			}
-		}
-	}
-	
-	private Node wander(Node origin, double stoppingChance, Random random)
-	{
-		Collection<Node> closed = new HashSet<Node> ();
-		List<Edge> edges = new ArrayList<Edge> ();
-		List<Edge> removals = new ArrayList<Edge> ();
-
-		
-		Node current = origin;
-
-		while (true)
-		{
-			closed.add(current);
-		
-			edges.addAll(current.getEdges());
-			removals.clear();
-			
-			for (Edge edge : edges)
-			{
-				if (closed.contains(edge.getTo()))
-				{
-					removals.add(edge);
-				}
-			}
-			
-			edges.removeAll(removals);
-			
-			if (edges.isEmpty())
-			{
-				return current;
-			}
-			else if (random.nextDouble()<=stoppingChance)
-			{
-				return current;
-			}
-			else
-			{
-				Collections.shuffle(edges);
-				current = edges.get(0).getTo();
-			}
-			
-		}
-
 	}
 
 	

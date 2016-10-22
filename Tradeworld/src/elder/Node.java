@@ -11,6 +11,8 @@ import elder.geometry.Point;
 public class Node extends Point
 {
 	
+	private final Collection<Demand> demand = new HashSet<Demand> ();
+	private final Collection<Supply> supply = new HashSet<Supply> ();
 	private final Collection<Edge> edges = new HashSet<Edge> ();
 		
 	private int wealth=0;
@@ -108,6 +110,16 @@ public class Node extends Point
 		}
 		
 		return false;
+	}
+
+	public Collection<Demand> getDemand()
+	{
+		return demand;
+	}
+
+	public Collection<Supply> getSupply()
+	{
+		return supply;
 	}
 	
 	

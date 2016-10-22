@@ -18,17 +18,18 @@ public class SupplyLayer extends Layer
 	{
 		double size=0.3;
 		
-		for (Supply supply : economy.getSupplys())
+		for (Node node : economy.getNetwork().getNodes())
 		{
-			Node node = supply.getNode();
-			
-			Polygon box = new Polygon();
-			box.add(new Node(node.x-size,node.y - size));
-			box.add(new Node(node.x+size,node.y - size));
-			box.add(new Node(node.x+size,node.y + size));
-			box.add(new Node(node.x-size,node.y + size));
-
-			createPolygon(box, supply.getResource().getR(), supply.getResource().getG(), supply.getResource().getB(), 1f, true);
+			for (Supply supply : node.getSupply())
+			{				
+				Polygon box = new Polygon();
+				box.add(new Node(node.x-size,node.y - size));
+				box.add(new Node(node.x+size,node.y - size));
+				box.add(new Node(node.x+size,node.y + size));
+				box.add(new Node(node.x-size,node.y + size));
+	
+				createPolygon(box, supply.getResource().getR(), supply.getResource().getG(), supply.getResource().getB(), 1f, true);
+			}
 		}
 	}
 

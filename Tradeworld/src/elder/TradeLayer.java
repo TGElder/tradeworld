@@ -24,30 +24,33 @@ public class TradeLayer extends Layer
 		
 		int maxTraffic=0;
 		
-		for (Demand demand : economy.getDemands())
+		for (Node node : economy.getNetwork().getNodes())
 		{
-			if (demand.getSupply()!=null)
+			for (Demand demand : node.getDemand())
 			{
-				IndexNode from = (IndexNode)demand.getNode();
-				IndexNode to = (IndexNode)demand.getSupply().getNode();
-				
-				for (Edge edge : economy.getNetwork().getDijkstra().getPath(from, to))
+				if (demand.getSupply()!=null)
 				{
-					Integer edgeTraffic = traffic.get(edge);
+					IndexNode from = (IndexNode)demand.getNode();
+					IndexNode to = (IndexNode)demand.getSupply().getNode();
 					
-					if (edgeTraffic==null)
+					for (Edge edge : economy.getNetwork().getDijkstra().getPath(from, to))
 					{
-						edgeTraffic = 0;
+						Integer edgeTraffic = traffic.get(edge);
+						
+						if (edgeTraffic==null)
+						{
+							edgeTraffic = 0;
+						}
+						
+						traffic.put(edge, edgeTraffic+1);
+	
+															
+						maxTraffic = Math.max(maxTraffic, edgeTraffic);
+	
+						
 					}
 					
-					traffic.put(edge, edgeTraffic+1);
-
-														
-					maxTraffic = Math.max(maxTraffic, edgeTraffic);
-
-					
 				}
-				
 			}
 		}
 		

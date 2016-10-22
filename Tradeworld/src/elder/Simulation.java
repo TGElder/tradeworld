@@ -31,9 +31,9 @@ public class Simulation implements Runnable
 		
 
 		
-		economy = new Economy(Network.generateRandomNetwork(50, 50, random, 0.5));
-		economy.addSupply(food, 400, 10, random);
-		economy.addSupply(wine, 4, 100, random);
+		economy = new Economy(Network.generateRandomNetwork(50, 50, random, 0.75));
+		economy.addSupply(food, 1600, 3, random);
+		economy.addSupply(wine, 16, 25, random);
 		
 		economy.randomlyPopulate(3,3, random);
 		
